@@ -25,6 +25,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import OformListItem from './OformListItem';
 import { For } from 'react-loops'
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -157,9 +159,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Dashboard() {
+ 
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [objects, setObjects] = useState({ entries:[{phoneNumber:"+919971082707"}, {phoneNumber:"+919999999999"}, {phoneNumber:"+919999999999"},{phoneNumber:"+919999999999"}, {phoneNumber:"+919999999999"}, {phoneNumber:"+919999999999"}, {phoneNumber:"+919999999999"}] })
+  const [objects, setObjects] = useState({ entries:[{phoneNumber:"+919971082707"}, {phoneNumber:"+919999999999"}, {phoneNumber:"+919999999999"},{phoneNumber:"+919999999999"}, {phoneNumber:"+919999999999"}, {phoneNumber:"+919999999999"}, {phonenumber:"+919999999999"}, {phonenumber:"+919999999999"}, {phonenumber:"+919999999999"}, {phonenumber:"+919999999999"}, {phonenumber:"+919999999999"}] })
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -171,6 +174,51 @@ export default function Dashboard() {
   const openForm = () => {
     window.location.replace(window.location.origin+"/fill_form_o") 
   };
+  const exportDataToCsv= () => {
+    //jsonData should be an array of objects
+     axios.get('/api/v1/get_all_entries_today')
+    .then(response => {
+      console.log(response.data);
+      var jsonData = []
+      for(var i=0; i<response.data.data.length; i++){
+        var json=flattenObject(response.data.data[i]) 
+        jsonData.push(json)
+      }
+      console.log(jsonData)
+      const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+      const header = Object.keys(jsonData[0])
+      let csv = jsonData.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+      csv.unshift(header.join(','))
+      csv = csv.join('\r\n')
+
+      console.log(csv)
+      var hiddenElement = document.createElement('a');
+      hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+      hiddenElement.target = '_blank';
+      hiddenElement.download = 'people.csv';
+      hiddenElement.click();
+    }, error => {
+      console.log(error);
+    });
+  };
+
+  const flattenObject = (obj) => {
+    let flattenKeys = {};
+    for (let i in obj) {
+        if (!obj.hasOwnProperty(i)) continue;
+        if ((typeof obj[i]) == 'object') {
+            // flattenKeys[i] = obj[i];
+            let flatObject = flattenObject(obj[i]);
+            for (let j in flatObject) {
+                if (!flatObject.hasOwnProperty(j)) continue;
+                flattenKeys[i + '_' + j] = flatObject[j];
+            }
+        } else {
+            flattenKeys[i] = obj[i];
+        }
+    }
+    return flattenKeys;
+};
   
   const logout = () => {
     window.location.replace(window.location.origin) 
@@ -238,6 +286,9 @@ export default function Dashboard() {
                 <Fab color="secondary" aria-label="add" className={classes.margin} style={{position:"fixed", bottom: "2em", right: "2em"}} onClick={openForm}>
                     <AddIcon />
                 </Fab>
+                <Fab color="primary" aria-label="add" className={classes.margin} style={{position:"fixed", bottom: "8em", right: "2em"}} onClick={exportDataToCsv}>
+                    <ImportExportIcon />
+                </Fab>
 
               <Grid item xs={12}>
                 <Typography variant="h5" align="center" style={{marginBottom:"1em"}} >
@@ -249,8 +300,6 @@ export default function Dashboard() {
                 <OformListItem props={item} />
                 }/>
               </Grid>
-
-
 
             </Grid>
           </Grid>

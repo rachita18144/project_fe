@@ -11,6 +11,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import axios from "axios";
+import FormGroup from '@material-ui/core/FormGroup';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -38,7 +39,35 @@ const useStyles = makeStyles(theme => ({
 
 export default function FormOComponent() {
   const classes = useStyles();
+  //************************** Checkbox states *********************************/
+  const [riskFactors, setRiskFactors] = React.useState({
+    checkHtn:false,
+    checkDiabetes: false,
+    checkFamilyhx: false,
+    checkSmoking: false,
+    checkCopd: false,
+    checkPastHistory: false,
+  });
+
+  const handleChange = name => event => {
+    setRiskFactors({ ...riskFactors, [name]: event.target.checked });
+    console.log(riskFactors.checkDiabetes)
+  };
+
+  const [ecg, setEcg] = React.useState({
+    checkAccutemi: false,
+    checkAccuteAcs: false,
+    checkStChanges: false,
+    checkedNonSpecific: false,
+  });
+
+  const handleEcgChange = name => event => {
+    setEcg({ ...ecg, [name]: event.target.checked });
+  };
+
+
   const [history, setHistory] = React.useState('');
+  const [historyComments, setHistoryComments] = React.useState('');
   const [thrombusSeen, setThrombusSeen] = React.useState('');
   const [thrombusAspiration, setThrombusAspiration] = React.useState('');
   const [numOfVessels, setNumOfVessels] = React.useState('');
@@ -79,7 +108,7 @@ export default function FormOComponent() {
 
 
 
-  const [caseNumber, setCaseNumber] = React.useState(123);
+  const [caseNumber, setCaseNumber] = React.useState();
   const [mobileNumber, setMobileNumber] = React.useState('');
   const [name, setName] = React.useState('');
   const [age, setAge] = React.useState('');
@@ -125,6 +154,7 @@ export default function FormOComponent() {
   const [lcxlength, setlcxlength] = React.useState('');
   const [lcxatmosphere, setlcxatmosphere] = React.useState('');
   const [lcxNumberStents, setlcxNumberStents] = React.useState('');
+  const [lcxNameStents, setlcxNameStents] = React.useState('');
   const [lcxWidthStent, setlcxWidthStent] = React.useState('');
   const [lcxLengthStent, setlcxLengthStent] = React.useState('');
   const [lcxAtmosStent, setlcxAtmosStent] = React.useState('');
@@ -160,6 +190,11 @@ export default function FormOComponent() {
   const [rcaWidthStentBaloon, setrcaWidthStentBaloon] = React.useState('');
   const [rcaLengthStentBaloon, setrcaLengthStentBaloon] = React.useState('');
   const [rcaAtmosStentBaloon, setrcaAtmosStentBaloon] = React.useState('');
+  const [renalNumOfStents, setRenalNumOfStents] = React.useState('');
+  const [renalNameOfStent, setRenalNameOfStent] = React.useState('');
+  const [renalWidth, setRenalWidth] = React.useState('');
+  const [renalLength, setRenalLength] = React.useState('');
+  const [renalAtmos, setRenalAtmos] = React.useState('');
 
 
   const onHistoryChange = event => {
@@ -202,12 +237,46 @@ export default function FormOComponent() {
       "/api/v1//save_oform_details",
       {
 
-      'case_number':caseNumber
+      'case_number':caseNumber,
+      'mobile':mobileNumber,
+      'name_of_patient':name,
+      'age':age,
+      'amount':amount,
+      'address':address,
+      //'date_of_admission':dateAdmission,
+      //'date_of_ptca':datePtca,
+      //'date_of_discharge':dateDischarge,
+      'ptca_hospital':ptcaHospital,
+      'doctor_name':doctorName,
+      'history':history,
+      'history_comments':historyComments,
+      'risk_factors':{'check_htn':riskFactors.checkHtn, 'check_diabetes':riskFactors.checkDiabetes, 'check_familyhx':riskFactors.checkFamilyhx, 'check_smoking':riskFactors.checkSmoking, 'check_copd':riskFactors.checkCopd, 'check_past_history':riskFactors.checkPastHistory,},
+      'investigations': {'blood_pressure':bloodPressure, 'blood_sugar':bloodSugar, 'ldl':ldl, 'cholesterol':cholesterol, 'lvef':lvef, 'tg':tg, 'serum_creatinine':serum,'hb':hb, 'platelets':platelets },
+      'ecg':{'check_accutemi':ecg.checkAccutemi, 'check_accute_acs':ecg.checkAccuteAcs, 'check_stchanges':ecg.checkStChanges, 'check_nonspecific':ecg.checkedNonSpecific, },
+      'echo_comments':echoComments,
+      'cag_report':cagcomments,
+      'thrombus_seen':thrombusSeen,
+      'thrombus_aspiration_done':thrombusAspiration,
+      'number_of_vessels':numOfVessels,
+      'stent_in_lad' : {'stent_in_site':stentInLad, 'predialataion_balloon':predialatationBallon, 'width':ladWidth, 'length':ladLength, 'atmosphere':ladAtmos, 'number_of_stents':ladNumberStents, 'name_of_stents':ladNameStent, 'size_of_stent': {'width':ladWidthStent , 'length':ladLengthStent, 'atmosphere':ladAtmosStent,}, 'size_of_distal_stent':{'width':ladWidthDistal , 'length':ladLengthDistal, 'atmosphere':ladAtmosDistal,}, 'size_of_proximal_stent':{'width':ladWidthProximal , 'length':ladLengthProximal, 'atmosphere':ladAtmosProximal,}, 'stent_at_site':{'width':ladWidthSite , 'length':ladLengthSite, 'atmosphere':ladAtmosSite,} , 'post_dialatation_balloon':{'width':ladWidthStentBaloon , 'length':ladLengthStentBaloon, 'atmosphere':ladAtmosStentBaloon,}},
+      'stent_in_lcx' : {'stent_in_site':stentInLcx, 'predialataion_balloon':predialatationBallonLcx, 'width':lcxwidth, 'length':lcxlength, 'atmosphere':lcxatmosphere, 'number_of_stents':lcxNumberStents, 'name_of_stents':lcxNameStents, 'size_of_stent': {'width':lcxWidthStent , 'length':lcxLengthStent, 'atmosphere':lcxAtmosStent,}, 'size_of_distal_stent':{'width':lcxWidthDistal , 'length':lcxLengthDistal, 'atmosphere':lcxAtmosDistal,}, 'size_of_proximal_stent':{'width':lcxWidthProximal , 'length':lcxLengthProximal, 'atmosphere':lcxAtmosProximal,}, 'stent_at_site':{'width':lcxWidthSite , 'length':lcxLengthSite, 'atmosphere':lcxAtmosSite,} , 'post_dialatation_balloon':{'width':lcxWidthStentBaloon, 'length':lcxLengthStentBaloon, 'atmosphere':lcxAtmosStentBaloon,}},
+      'stent_in_rca' : {'stent_in_site':stentInRca, 'predialataion_balloon':predialatationBallonRca, 'width':rcawidth, 'length':rcalength, 'atmosphere':rcaatmosphere, 'number_of_stents':rcaNumberStents, 'name_of_stents':rcaNameStent, 'size_of_stent': {'width':rcaWidthStent , 'length':rcaLengthStent, 'atmosphere':rcaAtmosStent,}, 'size_of_distal_stent':{'width':rcaWidthDistal , 'length':rcaLengthDistal, 'atmosphere':rcaAtmosDistal,}, 'size_of_proximal_stent':{'width':rcaWidthProximal , 'length':rcaLengthProximal, 'atmosphere':rcaAtmosProximal,}, 'stent_at_site':{'width':rcaWidthSite , 'length':rcaLengthSite, 'atmosphere':rcaAtmosSite,} , 'post_dialatation_balloon':{'width':rcaWidthStentBaloon, 'length':rcaLengthStentBaloon, 'atmosphere':rcaAtmosStentBaloon,}},
+      'renal_angoiplasty' : {'number_of_stents':renalNumOfStents, 'name_of_stents':renalNameOfStent, 'width':renalWidth, 'length':renalLength, 'atmosphere':renalAtmos,},
+      'ecosprine_drug':{'status':ecosprineSelect, 'dose':ecosprineDose, 'frequency':ecosprineFrequency},
+      'clopidogrel_drug':{'status':clopidogrelSelect, 'dose':clopidogrelDose, 'frequency':ecosprineFrequency},
+      'prasugrel_drug':{'status':prasugrelSelect, 'dose':prasugrelDose, 'frequency':prasugrelFrequency},
+      'statins_drug':{'status':statinsSelect, 'dose':statinsDose, 'frequency':statinsFrequency},
+      'ace_inhibitors_drug':{'status':aceInhibitorsSelect, 'dose':aceInhibitorsDose, 'frequency':aceInhibitorsFrequency},
+      'antianginal_drug':{'status':antiAnginalSelect, 'dose':antiAnginalDose, 'frequency':antiAnginalFrequency},
+      'betablockers_drug':{'status':betaBlockersSelect, 'dose':betaBlockersDose, 'frequency':betaBlockersFrequency},
+      'insulin_drug':{'status':insulinSelect, 'dose':insulinDose, 'frequency':insulinFrequency},
+      'oha_drug':{'status':ohaSelect, 'dose':ohaDose, 'frequency':ohaFrequency},
       },
     )
     .then(
       response => {
         console.log(response);
+        window.location.replace(window.location.origin + "/dashboard")
         //this.onLogin(response.data)
       },
       error => {
@@ -332,7 +401,7 @@ export default function FormOComponent() {
             id="historyComments"
             name="historyComments"
             label="Comments"
-            onBlur={event => setCaseNumber(event.target.value)}
+            onBlur={event => setHistoryComments(event.target.value)}
             fullWidth
           />
       </FormControl>
@@ -342,30 +411,38 @@ export default function FormOComponent() {
         <Typography variant="h6" gutterBottom>
           Risk Factors
         </Typography>
+        <FormGroup row>
           <FormControlLabel
-            control={<Checkbox color="secondary" name="Htn" value="Htn" />}
+            control={<Checkbox color="secondary" name="Htn" value="Htn" checked={riskFactors.checkHtn}
+            onChange={handleChange('checkHtn')} />}
             label="Htn"
           />
          <FormControlLabel
-            control={<Checkbox color="secondary" name="Diabetes" value="Diabetes" />}
+            control={<Checkbox color="secondary" name="Diabetes" value="Diabetes" checked={riskFactors.checkDiabetes}
+            onChange={handleChange('checkDiabetes')} />}
             label="Diabetes"
           />
          <FormControlLabel
-            control={<Checkbox color="secondary" name="Diabetes" value="Family Hx" />}
+            control={<Checkbox color="secondary" name="Diabetes" value="Family Hx" checked={riskFactors.checkFamilyhx}
+            onChange={handleChange('checkFamilyhx')} />}
             label="Family Hx"
           />
          <FormControlLabel
-            control={<Checkbox color="secondary" name="Diabetes" value="Smoking/Chewing" />}
+            control={<Checkbox color="secondary" name="Diabetes" value="Smoking/Chewing" checked={riskFactors.checkSmoking}
+            onChange={handleChange('checkSmoking')}/>}
             label="Smoking/Chewing"
           />
           <FormControlLabel
-            control={<Checkbox color="secondary" name="Diabetes" value="COPD" />}
+            control={<Checkbox color="secondary" name="Diabetes" value="COPD" checked={riskFactors.checkCopd}
+            onChange={handleChange('checkCopd')}/>}
             label="COPD"
           />
           <FormControlLabel
-            control={<Checkbox color="secondary" name="Diabetes" value="Past history of IHD" />}
+            control={<Checkbox color="secondary" name="Diabetes" value="Past history of IHD" checked={riskFactors.checkPastHistory}
+            onChange={handleChange('checkPastHistory')}/>}
             label="Past history of IHD"
           />
+      </FormGroup>
         </Grid>
        <Grid item xs={12}>
         <Typography variant="h6">
@@ -462,22 +539,24 @@ export default function FormOComponent() {
         </Grid>
 
       <Grid item xs={12}>
+      <FormGroup row>
           <FormControlLabel
-            control={<Checkbox color="secondary" name="accutemi" value="Acute MI" />}
+            control={<Checkbox color="secondary" name="accutemi" value="Acute MI" checked={ecg.checkAccutemi} onChange={handleEcgChange('checkAccutemi')} />}
             label="Acute MI"
           />
          <FormControlLabel
-            control={<Checkbox color="secondary" name="acuteacs" value="Acute ACS" />}
+            control={<Checkbox color="secondary" name="acuteacs" value="Acute ACS" checked={ecg.checkAccuteAcs} onChange={handleEcgChange('checkAccuteAcs')} />}
             label="Acute ACS"
           />
          <FormControlLabel
-            control={<Checkbox color="secondary" name="stchanes" value="ST-T changes" />}
+            control={<Checkbox color="secondary" name="stchanes" value="ST-T changes" checked={ecg.checkStChanges} onChange={handleEcgChange('checkStChanges')}/>}
             label="ST-T changes"
           />
          <FormControlLabel
-            control={<Checkbox color="secondary" name="nonspecific" value="Non specific Changes" />}
+            control={<Checkbox color="secondary" name="nonspecific" value="Non specific Changes" checked={ecg.checkedNonSpecific} onChange={handleEcgChange('checkedNonSpecific')}/>}
             label="Non specific Changes"
           />
+      </FormGroup>
         </Grid>
       <Grid item xs={12}>
         <Typography variant="h6" >
@@ -839,7 +918,7 @@ export default function FormOComponent() {
           <TextField
             id="lcxNumberStents"
             label="No of Stents"
-            onBlur={event => setCaseNumber(event.target.value)}
+            onBlur={event => setlcxNumberStents(event.target.value)}
             fullWidth
           />
     </Grid>
@@ -847,7 +926,7 @@ export default function FormOComponent() {
           <TextField
             id="lcxNameStent"
             label="Name Of Stent"
-            onBlur={event => setlcxNumberStents(event.target.value)}
+            onBlur={event => setlcxNameStents(event.target.value)}
             fullWidth
           />
     </Grid>
@@ -1226,7 +1305,7 @@ export default function FormOComponent() {
           <TextField
             id="renalNumber"
             label="No. of stent"
-            onBlur={event => setrcaLengthStentBaloon(event.target.value)}
+            onBlur={event => setRenalNumOfStents(event.target.value)}
             fullWidth
           />
     </Grid>
@@ -1234,7 +1313,7 @@ export default function FormOComponent() {
           <TextField
             id="renalName"
             label="Name of stent"
-            onBlur={event => setrcaLengthStentBaloon(event.target.value)}
+            onBlur={event => setRenalNameOfStent(event.target.value)}
             fullWidth
           />
     </Grid>
@@ -1242,7 +1321,7 @@ export default function FormOComponent() {
           <TextField
             id="renalWidth"
             label="Width"
-            onBlur={event => setrcaLengthStentBaloon(event.target.value)}
+            onBlur={event => setRenalWidth(event.target.value)}
             fullWidth
           />
     </Grid>
@@ -1250,7 +1329,7 @@ export default function FormOComponent() {
           <TextField
             id="renalLength"
             label="Length"
-            onBlur={event => setrcaLengthStentBaloon(event.target.value)}
+            onBlur={event => setRenalLength(event.target.value)}
             fullWidth
           />
     </Grid>
@@ -1258,7 +1337,7 @@ export default function FormOComponent() {
           <TextField
             id="renalAtmos"
             label="Atmosphere"
-            onBlur={event => setrcaLengthStentBaloon(event.target.value)}
+            onBlur={event => setRenalAtmos(event.target.value)}
             fullWidth
           />
     </Grid>
@@ -1289,9 +1368,9 @@ export default function FormOComponent() {
           value={ecosprineDose}
           onChange={event => setEcosprineDose(event.target.value)}
         >
-          <MenuItem value={50}>50</MenuItem>
-          <MenuItem value={75}>75</MenuItem>
-          <MenuItem value={325}>150</MenuItem>
+          <MenuItem value={"50"}>50</MenuItem>
+          <MenuItem value={"75"}>75</MenuItem>
+          <MenuItem value={"325"}>150</MenuItem>
         </Select>
         </FormControl>
     </Grid>
@@ -1330,9 +1409,9 @@ export default function FormOComponent() {
           value={clopidogrelDose}
           onChange={event => setClopidogrelDose(event.target.value)}
         >
-          <MenuItem value={50}>50</MenuItem>
-          <MenuItem value={75}>75</MenuItem>
-          <MenuItem value={325}>150</MenuItem>
+          <MenuItem value={"50"}>50</MenuItem>
+          <MenuItem value={"75"}>75</MenuItem>
+          <MenuItem value={"325"}>150</MenuItem>
         </Select>
         </FormControl>
     </Grid>
